@@ -1,15 +1,15 @@
 import os
 from fastapi.exceptions import HTTPException
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 from pymongo import MongoClient
 
-load_dotenv()
+config_credentials=dotenv_values(".env")
 
 
 def get_collection(collection_name:str):
     return (
-        MongoClient(os.getenv("local_db_url"))
-        [os.getenv("data_base")]
+        MongoClient(config_credentials["local_db_url"])
+        [config_credentials["data_base"]]
         [collection_name]
     )
 
