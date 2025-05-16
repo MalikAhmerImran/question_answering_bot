@@ -1,9 +1,9 @@
 from models import User
 from fastapi import Request
 from fastapi.routing import APIRouter
-from database import add_user
-from utils import verify_token,send_email
-from database import get_collection
+from database import add_user,get_collection,retrieve_user
+from utils import send_email
+from auth import verify_token,create_token
 user_router=APIRouter(prefix="/user")
 
 
@@ -12,6 +12,15 @@ async def user_registration(request:User):
     await send_email(email=request.email,instance=User)
     return add_user(data=request)
 
+
+@user_router.post("/login")
+async def user_login(request:User):
+    user_data=retrieve_user(data=request)
+    token=create_token(token=user_data)
+    return {
+        "token":token,
+        "message":"User login successfully"
+    }
 
 
 @user_router.get("/verification")

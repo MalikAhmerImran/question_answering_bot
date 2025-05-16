@@ -25,4 +25,14 @@ def add_user(data):
     }
 
 
+def retrieve_user(data):
+    collection=get_collection(collection_name="users")
+    user_data=collection.find_one({"email":data.email})
+    if user_data.get("is_verified","") is True:
+        return user_data
+    else:
+        raise HTTPException(status_code=404,detail="User does not exists or not verified")
+
+
+
 

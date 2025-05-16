@@ -1,11 +1,10 @@
-import jwt
-from fastapi.exceptions import HTTPException
-from fastapi_mail import FastMail,MessageSchema,ConnectionConfig
 from dotenv import dotenv_values
-from models import Email,User
-from database import get_collection
-
+from fastapi_mail import FastMail,MessageSchema,ConnectionConfig
+from models import User
+from auth import create_token
 config_credentials=dotenv_values(".env")
+
+
 conf = ConnectionConfig(
     MAIL_USERNAME =config_credentials["EMAIL"],
     MAIL_PASSWORD = config_credentials["PASS"],
@@ -24,7 +23,7 @@ async def send_email(email:str,instance:User):
         "username":email
     }
 
-    token=jwt.encode(token_data,config_credentials["SECRET"],algorithm="HS256")
+    token=create_token(token=token_data)
 
     template = f"http://localhost:8000/user/verification/?token={token}"
 
@@ -39,12 +38,3 @@ async def send_email(email:str,instance:User):
     await fn.send_message(message=message)
 
 
-def verify_token(token:str):
-    try:
-     
-        payload=jwt.decode(token,config_credentials["SECRET"], algorithms="HS256")
-        user=get_collection(collection_name="users").find_one({"email":payload.get("username")})
-    except Exception as e:
-        print("JWT Decode Error:", e)
-        raise HTTPException(status_code=404,detail="User does not exits or invalid token")
-    return user
