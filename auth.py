@@ -14,7 +14,6 @@ def create_token(token):
     return jwt.encode(token,config_credentials["SECRET"],algorithm="HS256") 
 
 
-
 def verify_token(token:str):
     try:
         payload=jwt.decode(token,config_credentials["SECRET"], algorithms="HS256")

@@ -16,6 +16,10 @@ async def user_registration(request:User):
 @user_router.post("/login")
 async def user_login(request:User):
     user_data=retrieve_user(data=request)
+    if user_data.get("password")!=request.password:
+       return{
+           "message":"Invalid Password."
+       }
     token=create_token(token=user_data)
     return {
         "token":token,
